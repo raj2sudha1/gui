@@ -1,0 +1,58 @@
+from microsoft/dotnet:latest
+
+# get add-apt-repository
+run apt-get update
+run apt-get -y --no-install-recommends install software-properties-common curl apt-transport-https
+
+# update apt cache
+run apt-get update
+
+# vscode dependencies
+run apt-get -y --no-install-recommends install libc6-dev libgtk2.0-0 libgtk-3-0 libpango-1.0-0 libcairo2 libfontconfig1 libgconf2-4 libnss3 libasound2 libxtst6 unzip libglib2.0-bin libcanberra-gtk-module libgl1-mesa-glx curl build-essential gettext libstdc++6 software-properties-common wget git xterm automake libtool autogen nodejs libnotify-bin aspell aspell-en htop git emacs mono-complete gvfs-bin libxss1 rxvt-unicode-256color x11-xserver-utils sudo vim libxkbfile1
+
+# install vscode
+run wget -O vscode-amd64.deb  https://go.microsoft.com/fwlink/?LinkID=760868
+run dpkg -i vscode-amd64.deb
+run rm vscode-amd64.deb
+
+# copy the developer folder
+# create our developer user
+workdir /root
+run groupadd -r developer -g 1000
+run useradd -u 1000 -r -g developer -d /developer -s /bin/bash -c "Software Developer" developer
+#copy /developer/bin/start-vscode /developer/start-vscode
+#copy /developer/bin/start-shell /developer/start-shell
+#copy /developer/.Xresources /developer/.Xresources
+copy /developer /developer
+workdir /developer
+
+# enable sudo for developer
+run echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/developer
+
+# fix developer permissions
+run chmod +x /developer/bin/*
+run chown -R developer:developer /developer
+user developer
+
+# install firefox
+run mkdir Applications
+#run wget "https://download.mozilla.org/?product=firefox-aurora-latest-ssl&os=linux64&lang=en-US" -O firefox.tar.bz2
+run wget "https://ftp.mozilla.org/pub/firefox/nightly/2016/06/2016-06-30-00-40-07-mozilla-aurora/firefox-49.0a2.en-US.linux-x86_64.tar.bz2" -O firefox.tar.bz2
+run tar -xf firefox.tar.bz2
+run mv firefox .local/share
+run rm firefox.tar.bz2
+
+# links for firefox
+run ln -s /developer/.local/share/firefox/firefox /developer/bin/x-www-browser
+run ln -s /developer/.local/share/firefox/firefox /developer/bin/gnome-www-browser
+
+# setup our ports
+expose 5000
+user developer
+
+# set environment variables
+env BROWSER /developer/.local/share/firefox/firefox-bin
+env SHELL /bin/bash
+
+# start vscode
+entrypoint ["/developer/bin/start-shell"]
