@@ -1,19 +1,30 @@
-from microsoft/dotnet:latest
+FROM microsoft/dotnet:2.0.0-preview1-sdk-jessie
 
 # get add-apt-repository
-run apt-get update
-run apt-get -y --no-install-recommends install software-properties-common curl apt-transport-https
+RUN apt-get update
+RUN apt-get -y --no-install-recommends install software-properties-common curl apt-transport-https
 
 # update apt cache
-run apt-get update
+RUN apt-get update
 
 # vscode dependencies
-run apt-get -y --no-install-recommends install libc6-dev libgtk2.0-0 libgtk-3-0 libpango-1.0-0 libcairo2 libfontconfig1 libgconf2-4 libnss3 libasound2 libxtst6 unzip libglib2.0-bin libcanberra-gtk-module libgl1-mesa-glx curl build-essential gettext libstdc++6 software-properties-common wget git xterm automake libtool autogen nodejs libnotify-bin aspell aspell-en htop git emacs mono-complete gvfs-bin libxss1 rxvt-unicode-256color x11-xserver-utils sudo vim libxkbfile1
+RUN apt-get -y --no-install-recommends install libc6-dev libgtk2.0-0 libgtk-3-0 libpango-1.0-0 libcairo2 libfontconfig1 libgconf2-4 libnss3 libasound2 libxtst6 unzip libglib2.0-bin libcanberra-gtk-module libgl1-mesa-glx curl build-essential gettext libstdc++6 software-properties-common wget git xterm automake libtool autogen nodejs libnotify-bin aspell aspell-en htop git emacs mono-complete gvfs-bin libxss1 rxvt-unicode-256color x11-xserver-utils sudo vim libxkbfile1
 
 # install vscode
-run wget -O vscode-amd64.deb  https://go.microsoft.com/fwlink/?LinkID=760868
-run dpkg -i vscode-amd64.deb
-run rm vscode-amd64.deb
+RUN wget -O vscode-amd64.deb  https://go.microsoft.com/fwlink/?LinkID=760868
+RUN dpkg -i vscode-amd64.deb
+RUN rm vscode-amd64.deb
+
+# install beyond compare dependecies
+RUN apt-get -y install libqtgui4 libqtcore4 libqtwebkit4 libqt4-opengl poppler-utils gnupg gnupg2
+RUN apt-get -y install --reinstall shared-mime-info
+
+# install beyond compare
+RUN wget https://www.scootersoftware.com/bcompare-4.2.6.23150_amd64.deb
+#RUN apt-get update -y
+
+RUN dpkg -i bcompare-4.2.6.23150_amd64.deb
+RUN rm bcompare-4.2.6.23150_amd64.deb
 
 # copy the developer folder
 # create our developer user
@@ -24,6 +35,7 @@ run useradd -u 1000 -r -g developer -d /developer -s /bin/bash -c "Software Deve
 #copy /developer/bin/start-shell /developer/start-shell
 #copy /developer/.Xresources /developer/.Xresources
 copy /developer /developer
+copy /developer/bin/start-bcompare /developer/bin/start-bcompare
 workdir /developer
 
 # enable sudo for developer
@@ -32,6 +44,13 @@ run echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/developer
 # fix developer permissions
 run chmod +x /developer/bin/*
 run chown -R developer:developer /developer
+#user developer
+
+
+# links for bcompare-4
+run ln -s /usr/lib/beyondcompare /developer/bin/beyondcompare
+run ln -s /usr/bin/bcompare /developer/bin/bcompare
+
 user developer
 
 # install firefox
@@ -48,7 +67,7 @@ run ln -s /developer/.local/share/firefox/firefox /developer/bin/gnome-www-brows
 
 # setup our ports
 expose 5000
-user developer
+#user developer
 
 # set environment variables
 env BROWSER /developer/.local/share/firefox/firefox-bin

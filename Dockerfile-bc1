@@ -1,0 +1,17 @@
+from microsoft/dotnet:latest
+
+#RUN apt-get update -y && apt-get install wget -y && apt-get install gdebi-core -y 
+#RUN wget https://www.scootersoftware.com/bcompare-4.2.6.23150_amd64.deb && gdebi bcompare-4.2.6.23150_amd64.deb -qn && rm bcompare-4.2.6.23150_amd64.deb -f
+
+RUN apt-get update -y
+RUN apt-get -y --no-install-recommends install software-properties-common curl apt-transport-https 
+RUN apt-get -y install libqtgui4 libqtcore4 libqtwebkit4 libqt4-opengl poppler-utils gnupg gnupg2 
+RUN apt-get -y install --reinstall shared-mime-info
+
+RUN wget https://www.scootersoftware.com/bcompare-4.2.6.23150_amd64.deb
+RUN apt-get update -y
+
+run dpkg -i bcompare-4.2.6.23150_amd64.deb
+run rm bcompare-4.2.6.23150_amd64.deb
+
+CMD 
