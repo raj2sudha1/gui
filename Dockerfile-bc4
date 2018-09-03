@@ -1,0 +1,12 @@
+FROM debian:jessie as build
+RUN apt-get update -y && apt-get install wget -y && apt-get install gdebi-core -y
+RUN wget https://www.scootersoftware.com/bcompare-4.2.6.23150_amd64.deb && gdebi bcompare-4.2.6.23150_amd64.deb -qn && rm bcompare-4.2.6.23150_amd64.deb -f
+
+FROM debian:jessie as runtime
+#WORKDIR /usr/lib/
+
+#COPY --from=build /usr/lib/beyondcompare/ /usr/lib/beyondcompare/
+#COPY --from=build /usr/bin/ /usr/bin/
+#COPY --from=build /usr/share/ /usr/share/
+COPY --from=build /usr/ /usr/
+CMD 

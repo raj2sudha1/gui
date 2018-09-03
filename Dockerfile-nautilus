@@ -1,0 +1,8 @@
+FROM ubuntu:14.04
+RUN apt-get -y update && apt-get -y upgrade && apt-get -y install nautilus && apt-get -y install gedit
+VOLUME /home/sy
+VOLUME /root/.Xauthority:rw
+ENV env DISPLAY
+ENV net host
+ENTRYPOINT nautilus
+

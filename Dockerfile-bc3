@@ -1,0 +1,4 @@
+FROM debian:jessie
+RUN apt-get update -y && apt-get install wget -y && apt-get install gdebi-core -y && wget https://www.scootersoftware.com/bcompare-4.2.6.23150_amd64.deb && gdebi bcompare-4.2.6.23150_amd64.deb -qn && rm bcompare-4.2.6.23150_amd64.deb -f
+
+CMD 

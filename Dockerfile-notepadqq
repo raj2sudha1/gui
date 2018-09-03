@@ -1,0 +1,5 @@
+FROM ubuntu:14.04
+#RUN wget http://security.ubuntu.com/ubuntu/pool/main/a/apt/apt_1.4_amd64.deb && dpkg -i apt_1.4_amd64.deb
+RUN apt-get update -y && apt-get install -y software-properties-common && add-apt-repository ppa:notepadqq-team/notepadqq && apt-get update -y && apt-get install notepadqq -y
+RUN apt-get update -y && apt-get install wget -y && apt-get install gdebi-core -y && wget https://www.scootersoftware.com/bcompare-4.2.6.23150_amd64.deb && gdebi bcompare-4.2.6.23150_amd64.deb -qn && rm bcompare-4.2.6.23150_amd64.deb -f
+CMD 
